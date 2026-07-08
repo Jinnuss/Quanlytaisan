@@ -12,7 +12,7 @@ import {
   addAsset as addAssetFirebase,
   updateAsset as updateAssetFirebase,
   deleteAsset as deleteAssetFirebase,
-  replaceAllAssets,
+  replaceAllAssets
   // importAssets
 } from "./assetService";
 import {
