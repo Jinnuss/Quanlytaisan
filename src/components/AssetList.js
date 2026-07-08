@@ -15,6 +15,7 @@ function AssetList({
           <th>Công ty</th>
           <th>Người dùng</th>
           <th>Giá tiền</th>
+           <th>Ghi chú</th>
           <th>Trạng thái</th>
           <th>Thao tác</th>
         </tr>
@@ -30,6 +31,8 @@ function AssetList({
             <td>
               {Number(asset.price).toLocaleString()}
             </td>
+            <td  className="note-column" title={asset.note}>{asset.note}</td>
+
             <td>{asset.status}</td>
 
             <td>
