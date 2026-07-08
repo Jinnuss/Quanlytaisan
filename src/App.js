@@ -13,7 +13,7 @@ import {
   updateAsset as updateAssetFirebase,
   deleteAsset as deleteAssetFirebase,
   replaceAllAssets,
-  importAssets
+  // importAssets
 } from "./assetService";
 import {
   exportAssetsToExcel,
