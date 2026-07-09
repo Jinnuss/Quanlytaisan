@@ -7,6 +7,7 @@ import {
   remove,
   onValue,
   set,
+  get,
 } from "firebase/database";
 
 // Đọc realtime
@@ -76,4 +77,37 @@ export const replaceAllAssets = async (assets) => {
 // Xóa toàn bộ
 export const clearAssets = async () => {
   await remove(ref(db, "assets"));
+};
+
+export const getNextAssetNumber = async (prefix) => {
+
+  const snapshot = await get(ref(db, "assets"));
+
+  if (!snapshot.exists()) return 1;
+
+  const data = Object.values(snapshot.val());
+
+  let max = 0;
+
+  data.forEach(asset => {
+
+    if (!asset.code) return;
+
+    if (asset.code.startsWith(prefix)) {
+
+      const number = parseInt(
+        asset.code.substring(prefix.length),
+        10
+      );
+
+      if (!isNaN(number) && number > max) {
+        max = number;
+      }
+
+    }
+
+  });
+
+  return max + 1;
+
 };

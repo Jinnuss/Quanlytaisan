@@ -33,24 +33,35 @@ function AssetList({
             </td>
             <td className="note-column" title={asset.note}>{asset.note}</td>
 
-            <td>{asset.status}</td>
+            <td>
+              <span
+                className={
+                  asset.status === "Kho"
+                    ? "stock"
+                    : "using"
+                }
+              >
+                {asset.status}
+              </span>
+            </td>
 
             <td>
               {/* <button onClick={() => onSelect(asset)}>
                 Chi tiết
               </button> */}
 
-              <button className="button" onClick={() => onEdit(asset)}>
+              <button className="edit-btn" onClick={() => onEdit(asset)}>
                 Sửa
               </button>
 
-              <button className="buttonXoa"
+              <button className="delete-btn"
                 onClick={() => {
                   console.log(asset);
                   console.log(asset.firebaseId);
                   onDelete(asset.firebaseId)
                 }}
               >
+
                 Xóa
               </button>
             </td>

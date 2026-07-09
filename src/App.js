@@ -6,6 +6,8 @@ import AssetDetail from "./components/AssetDetail";
 import FilterBar from "./components/FilterBar";
 import Toolbar from "./components/Toolbar";
 import { clearAssets } from "./assetService";
+import BulkImportForm from "./components/BulkImportForm";
+import { getNextAssetNumber } from "./assetService";
 import "./styles.css";
 // import { loadAssets, saveAssets } from "./utils/localStorage";
 import { getAssets } from "./assetService";
@@ -186,9 +188,57 @@ function App() {
     return matchName && matchCompany;
   });
 
+  const bulkImportAssets = async (data) => {
+
+    const quantity = Number(data.quantity);
+
+    let nextNumber = await getNextAssetNumber(data.code);
+
+    for (let i = 0; i < quantity; i++) {
+
+      await addAssetFirebase({
+
+        code:
+          data.code +
+          String(nextNumber).padStart(3, "0"),
+
+        name: data.name,
+
+        company: data.company,
+
+        user: "",
+
+        price: Number(data.price),
+
+        note: data.note,
+
+        status: "Kho",
+
+        logs: [
+
+          {
+
+            action: "Khởi tạo tài sản",
+
+            date: new Date().toLocaleString()
+
+          }
+
+        ]
+
+      });
+
+      nextNumber++;
+
+    }
+
+    alert("Nhập kho thành công!");
+
+  };
+
   return (
     <div className="container">
-      <h1>Quản lý Trang Thiết Bị</h1>
+      {/* <h1>Quản lý Trang Thiết Bị</h1> */}
 
       <AssetForm
         onSubmit={editingAsset ? updateAsset : addAsset}
@@ -215,13 +265,18 @@ function App() {
         }
       />
       <button className="buttonXoa" onClick={clearData}>Xóa dữ liệu</button>
-
-      <AssetList
-        assets={filteredAssets}
-        onEdit={setEditingAsset}
-        onDelete={deleteAsset}
-        onSelect={setSelectedAsset}
+      <BulkImportForm
+        onSubmit={bulkImportAssets}
       />
+      <div className="table-container">
+
+        <AssetList
+          assets={filteredAssets}
+          onEdit={setEditingAsset}
+          onDelete={deleteAsset}
+          onSelect={setSelectedAsset}
+        />
+      </div>
 
       {selectedAsset && (
         <AssetDetail asset={selectedAsset} />
