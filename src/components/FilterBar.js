@@ -1,11 +1,11 @@
 import React from "react";
 const companies = [
-      "HXG",
-      "HOMIE",
-      "GDB",
-      "Vietfurniture",
-      "NEW"
-      ];
+  "HXG",
+  "HOMIE",
+  "GDB",
+  "Vietfurniture",
+  "NEW"
+];
 
 
 function FilterBar({
@@ -13,11 +13,23 @@ function FilterBar({
   setSearchText,
   companyFilter,
   setCompanyFilter,
+  codeSearch,
+  setCodeSearch,
 }) {
   return (
     <div className="filter">
+      {/* <input
+        placeholder="Tìm theo mã..."
+        value={codeSearch}
+        onChange={(e) => setCodeSearch(e.target.value)}
+      />
       <input
         placeholder="Tìm kiếm tài sản..."
+        value={searchText}
+        onChange={(e) => setSearchText(e.target.value)}
+      /> */}
+      <input
+        placeholder="Tìm kiếm"
         value={searchText}
         onChange={(e) => setSearchText(e.target.value)}
       />

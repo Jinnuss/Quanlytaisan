@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { useEffect } from "react";
+
+import React, { useState, useEffect, useRef } from "react";
 import AssetForm from "./components/AssetForm";
 import AssetList from "./components/AssetList";
 import AssetDetail from "./components/AssetDetail";
@@ -8,6 +8,7 @@ import Toolbar from "./components/Toolbar";
 import { clearAssets } from "./assetService";
 import BulkImportForm from "./components/BulkImportForm";
 import { getNextAssetNumber } from "./assetService";
+import Modal from "./components/Modal";
 import "./styles.css";
 // import { loadAssets, saveAssets } from "./utils/localStorage";
 import { getAssets } from "./assetService";
@@ -27,10 +28,14 @@ import "./styles.css";
 function App() {
   const [selectedAsset, setSelectedAsset] = useState(null);
   const [editingAsset, setEditingAsset] = useState(null);
-
+  const [showAddModal, setShowAddModal] = useState(false);
+  const [showBulkModal, setShowBulkModal] = useState(false);
   const [searchText, setSearchText] = useState("");
   const [companyFilter, setCompanyFilter] = useState("");
   const [assets, setAssets] = useState([]);
+  const [showMenu, setShowMenu] = useState(false);
+  const [codeSearch, setCodeSearch] = useState("");
+  const menuRef = useRef(null);
   const addAsset = async (asset) => {
 
     await addAssetFirebase({
@@ -61,6 +66,34 @@ function App() {
     await clearAssets();
 
   };
+  useEffect(() => {
+
+  function handleClickOutside(event) {
+
+    if (
+      menuRef.current &&
+      !menuRef.current.contains(event.target)
+    ) {
+      setShowMenu(false);
+    }
+
+  }
+
+  document.addEventListener(
+    "mousedown",
+    handleClickOutside
+  );
+
+  return () => {
+
+    document.removeEventListener(
+      "mousedown",
+      handleClickOutside
+    );
+
+  };
+
+}, []);
 
   // const updateAsset = (updatedAsset) => {
   //   setAssets(
@@ -177,16 +210,16 @@ function App() {
   };
 
 
-  const filteredAssets = assets.filter((asset) => {
-    const matchName = asset.name
-      .toLowerCase()
-      .includes(searchText.toLowerCase());
+  // const filteredAssets = assets.filter((asset) => {
+  //   const matchName = asset.name
+  //     .toLowerCase()
+  //     .includes(searchText.toLowerCase());
 
-    const matchCompany =
-      companyFilter === "" || asset.company === companyFilter;
+  //   const matchCompany =
+  //     companyFilter === "" || asset.company === companyFilter;
 
-    return matchName && matchCompany;
-  });
+  //   return matchName && matchCompany;
+  // });
 
   const bulkImportAssets = async (data) => {
 
@@ -235,19 +268,61 @@ function App() {
     alert("Nhập kho thành công!");
 
   };
+  // const filteredAssets = assets.filter((asset) => {
+
+  //   const matchCode = asset.code
+  //     .toLowerCase()
+  //     .includes(codeSearch.toLowerCase());
+
+  //   const matchName = asset.name
+  //     .toLowerCase()
+  //     .includes(searchText.toLowerCase());
+
+  //   const matchCompany =
+  //     companyFilter === "" ||
+  //     asset.company === companyFilter;
+
+  //   return matchCode && matchName && matchCompany;
+
+  // });
+  const filteredAssets = assets.filter((asset) => {
+    const keyword = searchText.toLowerCase().trim();
+
+    const matchSearch =
+      (asset.code || "").toLowerCase().includes(keyword) ||
+      (asset.name || "").toLowerCase().includes(keyword) ||
+      (asset.user || "").toLowerCase().includes(keyword) ||
+      (asset.note || "").toLowerCase().includes(keyword);
+
+    const matchCompany =
+      companyFilter === "" || asset.company === companyFilter;
+
+    return matchSearch && matchCompany;
+  });
 
   return (
     <div className="container">
-      {/* <h1>Quản lý Trang Thiết Bị</h1> */}
+      <div className="title">Quản lý Tài Sản HEXAGROUP</div>
+      {/* 
+      <div className="action-bar">
+        <button onClick={() => setShowAddModal(true)}>
+          ➕ Thêm tài sản
+        </button>
 
-      <AssetForm
+        <button onClick={() => setShowBulkModal(true)}>
+          📥 Nhập kho hàng loạt
+        </button>
+      </div>
+      {/* <AssetForm
         onSubmit={editingAsset ? updateAsset : addAsset}
         editingAsset={editingAsset}
-      />
+      /> 
 
       <FilterBar
         searchText={searchText}
         setSearchText={setSearchText}
+        codeSearch={codeSearch}
+        setCodeSearch={setCodeSearch}
         companyFilter={companyFilter}
         setCompanyFilter={setCompanyFilter}
       />
@@ -264,15 +339,60 @@ function App() {
           })
         }
       />
-      <button className="buttonXoa" onClick={clearData}>Xóa dữ liệu</button>
-      <BulkImportForm
+      <button className="buttonXoa delete-btn" onClick={clearData}>Xóa dữ liệu</button>
+     <BulkImportForm
         onSubmit={bulkImportAssets}
-      />
+      /> */}
+      <div className="top-toolbar compact-toolbar">
+        <div className="search-box">
+          <FilterBar
+            searchText={searchText}
+            setSearchText={setSearchText}
+            companyFilter={companyFilter}
+            setCompanyFilter={setCompanyFilter}
+          />
+        </div>
+
+        <div className="menu-wrapper" ref={menuRef}>
+          <button
+            className="menu-btn"
+            onClick={() => setShowMenu(!showMenu)}
+          >
+            ☰ Menu
+          </button>
+
+          <div className={`dropdown-menu ${showMenu ? "show" : ""}`}>
+            <button className="primary-btn" onClick={() => setShowAddModal(true)}>
+              ➕ Thêm tài sản
+            </button>
+
+            <button className="success-btn" onClick={() => setShowBulkModal(true)}>
+              📥 Nhập kho hàng loạt
+            </button>
+
+            <Toolbar
+              onExport={() => exportAssetsToExcel(assets)}
+              onImport={(file) =>
+                importAssetsFromExcel(file, async (newAssets) => {
+                  await replaceAllAssets(newAssets);
+                })
+              }
+            />
+
+            <button className="danger-btn" onClick={clearData}>
+              🗑 Xóa dữ liệu
+            </button>
+          </div>
+        </div>
+      </div>
       <div className="table-container">
 
         <AssetList
           assets={filteredAssets}
-          onEdit={setEditingAsset}
+          onEdit={(asset) => {
+            setEditingAsset(asset);
+            setShowAddModal(true);
+          }}
           onDelete={deleteAsset}
           onSelect={setSelectedAsset}
         />
@@ -280,6 +400,43 @@ function App() {
 
       {selectedAsset && (
         <AssetDetail asset={selectedAsset} />
+      )}
+      {showAddModal && (
+        <Modal
+          title={editingAsset ? "Cập nhật tài sản" : "Thêm tài sản"}
+          onClose={() => {
+            setShowAddModal(false);
+            setEditingAsset(null);
+          }}
+        >
+          <AssetForm
+            onSubmit={async (asset) => {
+              if (editingAsset) {
+                await updateAsset(asset);
+              } else {
+                await addAsset(asset);
+              }
+
+              setShowAddModal(false);
+              setEditingAsset(null);
+            }}
+            editingAsset={editingAsset}
+          />
+        </Modal>
+      )}
+
+      {showBulkModal && (
+        <Modal
+          title="Nhập kho hàng loạt"
+          onClose={() => setShowBulkModal(false)}
+        >
+          <BulkImportForm
+            onSubmit={async (data) => {
+              await bulkImportAssets(data);
+              setShowBulkModal(false);
+            }}
+          />
+        </Modal>
       )}
     </div>
   );

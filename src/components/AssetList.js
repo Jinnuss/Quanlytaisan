@@ -8,6 +8,16 @@ function AssetList({
 }) {
   return (
     <table>
+      <colgroup>
+        <col className="col-code" />
+        <col className="col-name" />
+        <col className="col-company" />
+        <col className="col-user" />
+        <col className="col-price" />
+        <col className="col-note" />
+        <col className="col-status" />
+        <col className="col-action" />
+      </colgroup>
       <thead>
         <tr className="bg">
           <th>Mã</th>
@@ -29,7 +39,7 @@ function AssetList({
             <td>{asset.company}</td>
             <td>{asset.user}</td>
             <td>
-              {Number(asset.price).toLocaleString()}
+              {Number(asset.price).toLocaleString("vi-VN")} ₫
             </td>
             <td className="note-column" title={asset.note}>{asset.note}</td>
 
@@ -45,16 +55,16 @@ function AssetList({
               </span>
             </td>
 
-            <td>
+            <td className="action-cell">
               {/* <button onClick={() => onSelect(asset)}>
                 Chi tiết
               </button> */}
 
-              <button className="edit-btn" onClick={() => onEdit(asset)}>
-                Sửa
+              <button className=" icon-btn edit-btn" onClick={() => onEdit(asset)}>
+                ✏️
               </button>
 
-              <button className="delete-btn"
+              <button className="icon-btn delete-btn"
                 onClick={() => {
                   console.log(asset);
                   console.log(asset.firebaseId);
@@ -62,7 +72,7 @@ function AssetList({
                 }}
               >
 
-                Xóa
+                🗑️
               </button>
             </td>
           </tr>

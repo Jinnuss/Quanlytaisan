@@ -8,7 +8,7 @@ function Toolbar({ onExport, onImport }) {
                 Export Excel
             </button>
 
-            <div className="button1">
+            <button className="button btn1">
                 <label className="btn">
 
                     Import Excel
@@ -21,7 +21,7 @@ function Toolbar({ onExport, onImport }) {
                     />
 
                 </label>
-            </div>
+            </button>
 
 
         </div>

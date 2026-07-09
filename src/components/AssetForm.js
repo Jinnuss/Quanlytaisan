@@ -101,8 +101,8 @@ function AssetForm({ onSubmit, editingAsset }) {
         value={form.status}
         onChange={handleChange}
       >
-        <option>Kho</option>
-        <option>Đang cấp phát</option>
+        <option className="size">Kho</option>
+        <option className="size">Đang cấp phát</option>
       </select>
 
       <button type="submit">
